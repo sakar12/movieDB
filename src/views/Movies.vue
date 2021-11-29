@@ -1,16 +1,57 @@
 <template>
   <div style="background-color: black">
     <v-container fluid>
-      <v-img
-        contain
-        :src="`https://image.tmdb.org/t/p/original${trendingMovie[0].backdrop_path}`" dark
-        id="img"
-        class="mt-n3"
-      >
-      <span id="my-span" class="text-h2 pa-2 d-flex justify-center">{{ trendingMovie[0].title}}</span>
-      </v-img>
+      <v-row row wrap class="pt-0 mt-n8">
+        <v-col class="mt-4">
+          <v-row row wrap>
+            <v-col>
+              <div>
+                <div
+                  class="headline mt-2 ml-3"
+                  style="font-weight: 500; color: white"
+                >
+                  Movie List
+                </div>
+              </div>
+            </v-col>
 
-      <div class="text-h4 ml-2 mt-4 mb-2" style="color:white">Trending Movies</div>
+            <v-col class="text-right mr-n2">
+              <v-row>
+                <v-col>
+                  <v-text-field
+                  class="ml-16"
+                    style="width: 77%"
+                    v-model="search"
+                    label="Search By Movie"
+                    append-icon="mdi-magnify"
+                    single-line
+                    hide-details
+                    outlined
+                    filled
+                    dense
+                    background-color="white"
+                  />
+                </v-col>
+                <v-col>
+                  <v-select
+                  class="mr-5"
+                    v-model="selectedStatus"
+                    :items="statusList"
+                    :menu-props="{ maxHeight: '400' }"
+                    label="Filter By Genre"
+                    persistent-hint
+                    outlined
+                    dense
+                    hide-details
+                    background-color="white"
+                  />
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      
       <v-row no-gutters>
         <v-col
           order="1"
@@ -19,7 +60,13 @@
           md="3"
           :key="i"
         >
-          <v-card :loading="loading" class="mx-auto " max-width="374" max-height="570">
+        
+          <v-card
+            :loading="loading"
+            class="mx-auto"
+            max-width="374"
+            max-height="570"
+          >
             <template slot="progress">
               <v-progress-linear
                 color="deep-purple"
@@ -29,23 +76,24 @@
             </template>
             <v-container fluid>
               <v-img
-                  height="450"
-                  cover
-                  :src="`https://image.tmdb.org/t/p/w500${items.poster_path}`"
-                >
+                height="450"
+                cover
+                :src="`https://image.tmdb.org/t/p/w500${items.poster_path}`"
+              >
                 <v-app-bar flat color="rgba(0, 0, 0, 0)">
                   <v-spacer></v-spacer>
                   <v-menu offset-y>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-icon color="white" v-bind="attrs" v-on="on"
-                        style="background-color:#707070;border-radius:50px">mdi-dots-horizontal</v-icon
+                      <v-icon
+                        color="white"
+                        v-bind="attrs"
+                        v-on="on"
+                        style="background-color: #707070; border-radius: 50px"
+                        >mdi-dots-horizontal</v-icon
                       >
                     </template>
                     <v-list>
-                      <v-list-item
-                        @click="viewDetails()"
-                        class="pl-2"
-                      >
+                      <v-list-item @click="viewDetails()" class="pl-2">
                         <v-icon medium color="black" class="pr-1">
                           mdi-newspaper-variant
                         </v-icon>
@@ -53,10 +101,7 @@
                           {{ "View More" }}
                         </v-list-item-title>
                       </v-list-item>
-                      <v-list-item
-                        @click="viewDetails()"
-                        class="pl-2"
-                      >
+                      <v-list-item @click="viewDetails()" class="pl-2">
                         <v-icon medium color="black" class="pr-1">
                           mdi-pencil
                         </v-icon>
@@ -67,18 +112,18 @@
                     </v-list>
                   </v-menu>
                 </v-app-bar>
-                </v-img>
+              </v-img>
             </v-container>
             <v-card-title
-            class="mt-n6"
+              class="mt-n6"
               style="
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
               "
-              >
-              
-              {{ items.title }}</v-card-title>
+            >
+              {{ items.title }}</v-card-title
+            >
 
             <v-card-text>
               <v-row align="center" class="mx-0">
@@ -92,10 +137,12 @@
                 ></v-rating>
                 <div class="grey--text ml-1">
                   {{ items.vote_average }} ({{ items.vote_count }})
-                </div>            
+                </div>
               </v-row>
 
-              <div class="my-4 text-subtitle-1">Release Date : {{ items.release_date | formatDate }}</div>
+              <div class="my-4 text-subtitle-1">
+                Release Date : {{ items.release_date | formatDate }}
+              </div>
 
               <!-- <div
                 style="
@@ -108,7 +155,7 @@
               </div> -->
             </v-card-text>
 
-           <!--  <v-divider class="mx-4"></v-divider> -->
+            <!--  <v-divider class="mx-4"></v-divider> -->
 
             <!-- <v-card-actions>
               <v-btn color="deep-purple lighten-2" text @click="reserve">
@@ -145,7 +192,7 @@
 import axios from "axios";
 
 export default {
-  name: "Home",
+  name: "Movies",
 
   data: () => ({
     trendingMovie: [],
@@ -175,21 +222,4 @@ export default {
 };
 </script>
 <style scoped>
-#img {
-  width: 100%;
-  height: 100%;
-}
-
-body {
-  background: orange;
-}
-
-/* #my-span {
-  color: white;
-  font-size: 3em;
-  font-weight: bold;
-  display: table;
-  margin:0 auto;
-} */
-
 </style>

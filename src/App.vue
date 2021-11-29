@@ -15,8 +15,9 @@
           <v-list-item
             v-for="item in items"
             :key="item.title"
+            :to="item.href"
             link
-            color="black"
+            color="white"
           >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
@@ -32,7 +33,7 @@
 
     <v-app-bar app color="black " dark>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Movie DB</v-toolbar-title>
+      <v-toolbar-title></v-toolbar-title>
     </v-app-bar>
 
     <v-main>
@@ -49,10 +50,10 @@ export default {
   data: () => ({
     drawer: false,
     items: [
-      { title: "Home", icon: "mdi-home" },
-      { title: "Movies", icon: "mdi-movie-play" },
-      { title: "Tv Shows", icon: "mdi-movie-star" },
-      { title: "History", icon: "mdi-history" },
+      { title: "Home", icon: "mdi-home", path: "/",href:"/" },
+      { title: "Movies", icon: "mdi-movie-play", href:"/movies" },
+      { title: "Tv Shows", icon: "mdi-movie-star", href:"/tvshows" },
+      { title: "History", icon: "mdi-history", href:"/history" },
     ],
     right: null,
   }),
