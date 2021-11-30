@@ -36,7 +36,7 @@
       <v-toolbar-title></v-toolbar-title>
     </v-app-bar>
 
-    <v-main>
+    <v-main style="background-color:black;">
       <router-view />
     </v-main>
   </v-app>

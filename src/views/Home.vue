@@ -43,7 +43,7 @@
                     </template>
                     <v-list>
                       <v-list-item
-                        @click="viewDetails()"
+                        @click="viewDetails(items)"
                         class="pl-2"
                       >
                         <v-icon medium color="black" class="pr-1">
@@ -171,6 +171,10 @@ export default {
         console.log("Data of configuration", res);
       });
     },
+    viewDetails(movieID){
+      localStorage.setItem("clickedMovie",JSON.stringify(movieID))
+      this.$router.push("/movieDetails");
+    }
   },
 };
 </script>

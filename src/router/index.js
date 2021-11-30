@@ -5,6 +5,7 @@ import About from "../views/About.vue";
 import Movies from "../views/Movies.vue";
 import TvShows from "../views/TvShows.vue";
 import History from "../views/History.vue";
+import MovieDetails from "../views/MovieDetails.vue"
 
 Vue.use(VueRouter);
 
@@ -33,8 +34,14 @@ const routes = [
 
   {
     path: "/history",
-    name: "Histoy",
+    name: "History",
     component: History,
+  },
+
+  {
+    path: "/movieDetails",
+    name: "Movie Details",
+    component: MovieDetails,
   },
 ];
 

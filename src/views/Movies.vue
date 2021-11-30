@@ -19,7 +19,7 @@
               <v-row>
                 <v-col>
                   <v-text-field
-                  class="ml-16"
+                    class="ml-16"
                     style="width: 77%"
                     v-model="search"
                     label="Search By Movie"
@@ -34,9 +34,9 @@
                 </v-col>
                 <v-col>
                   <v-select
-                  class="mr-5"
-                    v-model="selectedStatus"
-                    :items="statusList"
+                    class="mr-5"
+                    v-model="selectedGenre"
+                    :items="filteredMovieGenreList"
                     :menu-props="{ maxHeight: '400' }"
                     label="Filter By Genre"
                     persistent-hint
@@ -45,22 +45,29 @@
                     hide-details
                     background-color="white"
                   />
+                  <!-- <v-btn
+              color="primary"
+              @click="filterClicked"
+              class="whiteTextInButton ml-0 mr-n2"
+            >
+              <v-icon class="mr-2" small>mdi-filter</v-icon>
+              {{ "Filter" }}
+            </v-btn> -->
                 </v-col>
               </v-row>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      
+
       <v-row no-gutters>
         <v-col
           order="1"
           class="pa-3"
-          v-for="(items, i) in trendingMovie"
+          v-for="(items, i) in resultQuery"
           md="3"
           :key="i"
         >
-        
           <v-card
             :loading="loading"
             class="mx-auto"
@@ -93,7 +100,7 @@
                       >
                     </template>
                     <v-list>
-                      <v-list-item @click="viewDetails()" class="pl-2">
+                      <v-list-item @click="viewDetails(items)" class="pl-2">
                         <v-icon medium color="black" class="pr-1">
                           mdi-newspaper-variant
                         </v-icon>
@@ -101,7 +108,7 @@
                           {{ "View More" }}
                         </v-list-item-title>
                       </v-list-item>
-                      <v-list-item @click="viewDetails()" class="pl-2">
+                      <v-list-item @click="editName()" class="pl-2">
                         <v-icon medium color="black" class="pr-1">
                           mdi-pencil
                         </v-icon>
@@ -115,12 +122,8 @@
               </v-img>
             </v-container>
             <v-card-title
-              class="mt-n6"
-              style="
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-              "
+              class="mt-n6 d-inline-block text-truncate"
+              :search="search"
             >
               {{ items.title }}</v-card-title
             >
@@ -169,6 +172,18 @@
         </v-col>
       </v-row>
 
+      <!-- <template v-if="resultQuery == 0">
+        <v-container fluid style="background-color: black; margin-top: 15%">
+          <v-img
+            class="mx-auto"
+            width="100"
+            height="100"
+            src="@/assets/noresult.png"
+          />
+          <h1 class="text-center" style="color: grey">No results Found</h1>
+        </v-container>
+      </template> -->
+
       <!-- <v-layout row wrap>
   <v-flex xs12 sm12>
     <v-parallax src="https://cdn.vuetifyjs.com/images/parallax/material.jpg">
@@ -196,13 +211,32 @@ export default {
 
   data: () => ({
     trendingMovie: [],
+    search: "",
+    movieGenreList: {},
+    filteredMovieGenreList: ["All"],
+    genreListvmodel: "",
+    selectedGenre:""
   }),
+
+  computed: {
+  resultQuery(){
+      if(this.search){
+      return this.trendingMovie.filter((item)=>{
+        return this.search.toLowerCase().split(' ').every(v => item.title.toLowerCase().includes(v))
+      })
+      }else{
+        return this.trendingMovie;
+      }
+    } 
+  },
 
   components: {},
 
   created() {
     this.listTrendingMovies();
     this.configurationAPI();
+    this.listMovieGenres();
+    this.resultQuery();
   },
 
   methods: {
@@ -210,14 +244,84 @@ export default {
       axios.get(`${process.env.VUE_APP_TRENDING_MOVIE}`).then((res) => {
         this.trendingMovie = res.data.results;
         console.log("Trending movie list", this.trendingMovie);
-        console.log("Data of treding movie", res);
+        //console.log("Data of treding movie", res);
       });
     },
     configurationAPI() {
       axios.get(`${process.env.VUE_APP_CONFIGURATION_API}`).then((res) => {
-        console.log("Data of configuration", res);
+        //console.log("Data of configuration", res);
       });
     },
+    listMovieGenres() {
+      axios.get(`${process.env.VUE_APP_MOVIE_GENRE_LIST}`).then((res) => {
+        this.movieGenreList = res.data.genres;
+        //console.log("Movie Genre List", this.movieGenreList);
+        for (var i = 0; i < this.movieGenreList.length; i++) {
+          this.filteredMovieGenreList.push(this.movieGenreList[i].name);
+        }
+        //console.log("Status List", this.filteredMovieGenreList);
+        //console.log("Response of genre movie", res);
+      });
+    },
+
+    viewDetails(movieID){
+      localStorage.setItem("clickedMovie",JSON.stringify(movieID))
+      this.$router.push("/movieDetails");
+    }
+    /* filterClicked() {
+     // console.log("selected status", this.selectedGenre);
+      if (this.selectedGenre == "All"){
+        this.listTrendingMovies()
+      } else {
+      this.filterMovieByGenre();
+      }
+    },
+
+    filterMovieByGenre(){
+       axios.get(`${process.env.VUE_APP_TRENDING_MOVIE}`).then((res) => {
+         this.trendingMovie = res.data.results;
+        //console.log(res);
+        for (var m = 0; m < this.trendingMovie.length; m++) {
+          this.filteredMovieGenreList.push(this.trendingMovie[m].genre_ids);
+        }
+         console.log("Status List", this.filteredMovieGenreList);
+        console.log("filter logic", this.selectedGenre, this.trendingMovie); 
+
+        this.selectedFilterList = [];
+        this.selectedFilterList.push(this.selectedGenre);
+        console.log(this.selectedFilterList);
+        this.tableFilteredList = [];
+        for (var n = 0; n < this.trendingMovie.length; n++) {
+          console.log(Object.values(this.trendingMovie[n]));
+          for (var o = 0; o < this.selectedFilterList.length; o++) {
+            if (
+              Object.values(this.trendingMovie[n]).includes(
+                this.selectedFilterList[o]
+              )
+            ) {
+              console.log(
+                this.selectedFilterList[o],
+                "is there in",
+                this.trendingMovie[n]
+              );
+              this.tableFilteredList.push(this.trendingMovie[n]);
+            }
+          }
+        }
+        console.log("Table FIlterd List", this.tableFilteredList);
+        const result = [];
+        const map = new Map();
+        for (const item of this.tableFilteredList) {
+          if (!map.has(item.id)) {
+            map.set(item.id, true);
+            result.push(item);
+          }
+        }
+        console.log("Result", result);
+        this.trendingMovie = [];
+        this.trendingMovie = result;
+      });
+    } */
   },
 };
 </script>
